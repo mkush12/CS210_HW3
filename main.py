@@ -157,11 +157,11 @@ def read_user_ratings(f):
         line.strip('\n')
         name, rating, uID = line.split('|')
         name = name.strip('\n')
-        rating = rating.strip("\n")
-        uID = uID.strip("\n")
-        print("name: ", name)
-        print("rating: ", rating)
-        print("uID: ", uID)
+        rating = float(rating.strip("\n"))
+        uID = int(uID.strip("\n"))
+        # print("name: ", name)
+        # print("rating: ", rating)
+        # print("uID: ", uID)
         if uID in uRatings:
             uRatings[uID].append((name, rating))
         else:
@@ -174,14 +174,39 @@ def read_user_ratings(f):
 
 def get_user_genre(user_id, user_to_movies, movie_to_genre):
     temp = user_to_movies[user_id]
+    genres = {}
+    averages = {}
+    # print("temp: ", temp)
+    for i in temp:
+        if movie_to_genre[i[0]] in genres:
+            genres[movie_to_genre[i[0]]].append(i[1])
+        else:
+            genres[movie_to_genre[i[0]]] = [i[1]]
+    # print("genres: ", genres)
 
-
+    for i in genres.keys():
+        averages[i] = round((sum(genres[i])/len(genres[i])), 2)
+    # print("averages: ", averages)
+    uGenre = max(averages, key=averages.get)
     return uGenre
 
-# # 4.3
-# def recommend_movies(user_id, user_to_movies, movie_to_genre,
-# movie_to_average_rating):
-# pass
+# 4.3
+
+
+def recommend_movies(user_id, user_to_movies, movie_to_genre, movie_to_average_rating):
+    uRec = {}
+    uMovies = user_to_movies[user_id]
+    notSeen = {}
+    for i in movie_to_average_rating.keys():
+        for k in uMovies:
+            if i == k[0]:
+                print("i: ", i)
+                notSeen[i] = movie_to_genre[i]
+    print("uMovies: ", uMovies)
+    print("notSeen: ", notSeen)
+    print("len(notSeen): ", len(notSeen))
+    return uRec
+
 
 if __name__ == "__main__":
     ratings = read_ratings_data("movieRatingSample.txt")
@@ -197,7 +222,7 @@ if __name__ == "__main__":
     # print("len(gDict): ", len(gDict))
 
     aveRatings = calculate_average_rating(ratings)
-    # print("aveRatings: ", aveRatings)
+    print("aveRatings: ", aveRatings)
     # print("len(aveRatings): ", len(aveRatings))
 
     popDict = get_popular_movies(aveRatings)
@@ -223,8 +248,9 @@ if __name__ == "__main__":
     print("uRatings: ", uRatings)
     # print("len(uRatings): ", len(uRatings))
 
-    uGenre = get_user_genre(1, uRatings, genres)
-    print("uGenre: ", uGenre)
-    print("len(uGenre): ", len(uGenre))
+    uGenre = get_user_genre(6, uRatings, genres)
+    # print("uGenre: ", uGenre)
 
-
+    uRec = recommend_movies(6, uRatings, genres, aveRatings)
+    print("uRec:", uRec)
+    print("len(uRec): ", len(uRec))
