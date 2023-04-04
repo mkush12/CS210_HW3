@@ -11,7 +11,7 @@ def read_ratings_data(f):
     rFile = open(f)
     for line in rFile:
         line.strip('\n')
-        name, rating, mID = line.split('|')
+        name, rating, uID = line.split('|')
         name = name.strip('\n')
         # print("name: ", name)
         # print("rating: ", rating)
@@ -28,7 +28,7 @@ def read_movie_genre(f):
     rFile = open(f)
     for line in rFile:
         line.strip('\n')
-        genre, mID, name = line.split('|')
+        genre, uID, name = line.split('|')
         genre = genre.strip('\n')
         name = name.strip('\n')
         # print("name: ", name)
@@ -116,7 +116,7 @@ def get_genre_rating(genre, genre_to_movies, movie_to_average_rating):
     temp2 = {}
     for i in temp:
         temp2[i] = movie_to_average_rating[i]
-    print("temp2: ", temp2)
+    # print("temp2: ", temp2)
     total = 0
     for i in temp2:
         total = total+temp2[i]
@@ -127,17 +127,57 @@ def get_genre_rating(genre, genre_to_movies, movie_to_average_rating):
 
 
 def genre_popularity(genre_to_movies, movie_to_average_rating, n=5):
-    pass
+    gpDict = {}
+    temp = {}
+    for i in genre_to_movies.keys():
+        temp[i] = get_genre_rating(i, genre_to_movies, movie_to_average_rating)
+    # print("temp: ", temp)
+    genres = []
+    for k in temp.keys():
+        genres.append(k)
+    # print("genres: ", genres)
+    i = 0
+    while n >= 0:
+        # print("i: ", i)
+        if i >= len(temp):
+            break
+        gpDict[genres[i]] = temp[genres[i]]
+        # print(pDict)
+        i = i + 1
+        n = n - 1
+    return gpDict
+
 
 # # --- PART 4: USER FOCUSED ---
-# # 4.1
-# def read_user_ratings(f):
-# pass
-#
-# # 4.2
-# def get_user_genre(user_id, user_to_movies, movie_to_genre):
-# pass
-#
+# 4.1
+def read_user_ratings(f):
+    uRatings = {}
+    rFile = open(f)
+    for line in rFile:
+        line.strip('\n')
+        name, rating, uID = line.split('|')
+        name = name.strip('\n')
+        rating = rating.strip("\n")
+        uID = uID.strip("\n")
+        print("name: ", name)
+        print("rating: ", rating)
+        print("uID: ", uID)
+        if uID in uRatings:
+            uRatings[uID].append((name, rating))
+        else:
+            uRatings[uID] = [(name, rating)]
+
+    return uRatings
+
+# 4.2
+
+
+def get_user_genre(user_id, user_to_movies, movie_to_genre):
+    temp = user_to_movies[user_id]
+
+
+    return uGenre
+
 # # 4.3
 # def recommend_movies(user_id, user_to_movies, movie_to_genre,
 # movie_to_average_rating):
@@ -149,15 +189,15 @@ if __name__ == "__main__":
     # print("len(ratings): ", len(ratings))
 
     genres = read_movie_genre("genreMovieSample.txt")
-    # print("genres:", genres)
+    print("genres:", genres)
     # print("len(genres): ", len(genres))
 
     gDict = create_genre_dict(genres)
-    print("gDict: ", gDict)
+    # print("gDict: ", gDict)
     # print("len(gDict): ", len(gDict))
 
     aveRatings = calculate_average_rating(ratings)
-    print("aveRatings: ", aveRatings)
+    # print("aveRatings: ", aveRatings)
     # print("len(aveRatings): ", len(aveRatings))
 
     popDict = get_popular_movies(aveRatings)
@@ -175,5 +215,16 @@ if __name__ == "__main__":
     gRating = get_genre_rating("Comedy", gDict, aveRatings)
     # print("gRating: ", gRating)
 
-    gpDict = genre_popularity()
+    gpDict = genre_popularity(gDict, aveRatings)
+    # print("gpDict: ", gpDict)
+    # print("len(gpDict): ", len(gpDict))
+
+    uRatings = read_user_ratings("movieRatingSample.txt")
+    print("uRatings: ", uRatings)
+    # print("len(uRatings): ", len(uRatings))
+
+    uGenre = get_user_genre(1, uRatings, genres)
+    print("uGenre: ", uGenre)
+    print("len(uGenre): ", len(uGenre))
+
 
