@@ -10,19 +10,29 @@ def read_ratings_data(f):
     mRatings = {}
     rFile = open(f)
     for line in rFile:
+        line.strip('\n')
         name, rating, mID = line.split('|')
-        print("name: ", name)
-        print("rating: ", rating)
-        print("ID: ", mID)
-
+        # print("name: ", name)
+        # print("rating: ", rating)
+        if name in mRatings:
+            mRatings[name].append(float(rating))
+        else:
+            mRatings[name] = [float(rating)]
     return mRatings
 
 
+# 1.2
+def read_movie_genre(f):
+    mGenre = {}
+    rFile = open(f)
+    for line in rFile:
+        line.strip('\n')
+        genre, mID, name = line.split('|')
+        # print("name: ", name)
+        # print("rating: ", rating)
+        mGenre[name] = genre
+    return mGenre
 
-# # 1.2
-# def read_movie_genre(f):
-# pass
-#
 # # --- PART 2: PROCESSING DATA ---
 # # 2.1
 # def create_genre_dict(d):
@@ -71,3 +81,7 @@ if __name__ == "__main__":
     ratings = read_ratings_data("movieRatingSample.txt")
     print("ratings:\n", ratings)
     print("len(ratings): ", len(ratings))
+
+    genres = read_movie_genre("genreMovieSample.txt")
+    print("genres:", genres)
+    print("len(genres): ", len(genres))
